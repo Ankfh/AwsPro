@@ -6,18 +6,19 @@ const productShema = new schema(
   {
     productName: {
       type: String,
-      required: true,
+      // required: true,
     },
     serialNumber: {
       type: String,
-      required: true,
+      // required: true,
     },
     productDescription: {
       type: String,
-      required: true,
+      // required: true,
     },
     productPhoto: {
-      type: String,
+      type: Array,
+      default: []
     },
     goodsBill: {
       type: String,
