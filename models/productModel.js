@@ -17,8 +17,7 @@ const productShema = new schema(
       // required: true,
     },
     productPhoto: {
-      type: Array,
-      default: []
+      type: String,
     },
     goodsBill: {
       type: String,

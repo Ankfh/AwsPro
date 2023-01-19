@@ -16,18 +16,7 @@ const addProduct = async (req, res) => {
     goodsBill,
   } = req.body;
   try {
-    // if (Array.isArray(pdfs)) {
-    //   if (req.files.pdf) {
-    //     for (let i = 0; i < pdfs.length; i++) {
-    //       const uploadPath = await productBilsUpload(pdfs[i]);
-    //       pdfPath.push(uploadPath);
-    //     }
-    //   }
-    // } else {
-    //   const uploadPath = await productBilsUpload(pdfs);
-    //   pdfPath.push(uploadPath);
-    // }
-    // const pdfString = JSON.stringify(pdfPath);
+  
     const products = new productModel({
       productName,
       serialNumber,
@@ -70,11 +59,11 @@ const deleteProductById = async (req, res) => {
         .status(201)
         .json({ message: "No Such Product found", success: false });
     }
-    const parseProductPhoto = JSON.parse(products.productPhoto);
-    const parseProductBill = JSON.parse(products.goodsBill);
+    // const parseProductPhoto = JSON.parse(products.productPhoto);
+    // const parseProductBill = JSON.parse(products.goodsBill);
 
-    await productPhotoDelete(parseProductPhoto);
-    await productBillsDelete(parseProductBill);
+    // await productPhotoDelete(parseProductPhoto);
+    // await productBillsDelete(parseProductBill);
 
     res.status(200).json({ message: "Product Deleted", success: true });
   } catch (error) {
