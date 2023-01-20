@@ -13,6 +13,9 @@ const userSchema = new schema(
       required: true,
       unique: true,
     },
+    token:{
+       type: String,
+    },
     password: {
       type: String,
       required: true,
