@@ -4,7 +4,7 @@ const router = express.Router();
 
 const checkAuth = require("../middleware/checkAuth");
 
-const { addProduct ,getAllProduct,deleteProductById,updateProducts,addProductPhotos ,deleteProductPhoto} = require("../controller/productController");
+const { addProduct ,getAllProduct,deleteProductById,updateProducts,addProductPhotos ,deleteProductPhoto,addBills,deleteBills} = require("../controller/productController");
 
 
 ///routes//////
@@ -15,5 +15,7 @@ router.delete("/deleteproduct",checkAuth , deleteProductById);
 router.put("/updateproduct",checkAuth , updateProducts);
 router.post("/productphotoadd",checkAuth , addProductPhotos);
 router.delete("/deleteproductphoto",checkAuth , deleteProductPhoto);
+router.post("/addbills",checkAuth , addBills);
+router.delete("/deletebills",checkAuth , deleteBills);
 
 module.exports = router;

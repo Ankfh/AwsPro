@@ -16,7 +16,6 @@ const addProduct = async (req, res) => {
     goodsBill,
   } = req.body;
   try {
-  
     const products = new productModel({
       productName,
       serialNumber,
@@ -85,10 +84,10 @@ const updateProducts = async (req, res) => {
   // const parseProductBill = JSON.parse(product.goodsBill);
 
   // if (req.files.photo) {
-  //   const images = req.files.photo;
+  //   const pdf = req.files.photo;
   //   await productPhotoDelete(parseProductPhoto);
-  //   for (let i = 0; i < images.length; i++) {
-  //     const uploadPath = await uploadProductImage(images[i]);
+  //   for (let i = 0; i < pdf.length; i++) {
+  //     const uploadPath = await uploadProductImage(pdf[i]);
   //     imagePath.push(uploadPath);
   //   }
   // }
@@ -110,12 +109,12 @@ const updateProducts = async (req, res) => {
   //   }
   // }
 
-  // const imagesString = JSON.stringify(imagePath);
+  // const pdfString = JSON.stringify(imagePath);
   const change = {
     productName: req.body.productName,
     productDescription: req.body.productDescription,
     serialNumber: req.body.serialNumber,
-    // productPhoto: imagesString,
+    // productPhoto: pdfString,
     // goodsBill: pdfPath,
   };
 
@@ -130,7 +129,7 @@ const updateProducts = async (req, res) => {
 /////Add product photo ........................
 const addProductPhotos = async (req, res) => {
   try {
-    const images = req.files.photo;
+    const pdf = req.files.photo;
 
     const imagePath = [];
     if (req.files.photo) {
@@ -163,6 +162,44 @@ const deleteProductPhoto = async (req, res) => {
     return res.status(404).json({ error: error.message, success: false });
   }
 };
+
+//"""""""""""""""""""""""'add billsssss;;;;;;;;;;;;"
+const addBills = async (req, res) => {
+  try {
+    const pdf = req.files.pdf;
+
+    const pdfPath = [];
+    if (req.files.pdf) {
+      const uploadPath = await productBilsUpload(pdf);
+      pdfPath.push(uploadPath);
+    } else {
+      return res
+        .status(201)
+        .json({ message: "No Bills Found", success: false });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Bills added Successfull", pdfPath, success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
+//""""""""""Delete Bills"""""""""""""
+const deleteBills = async (req, res) => {
+  const { name } = req.body;
+  console.log(name);
+  try {
+    await productBillsDelete(name);
+
+    return res
+      .status(200)
+      .json({ message: "Bill deleted Successfull", success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
 module.exports = {
   addProduct,
   getAllProduct,
@@ -170,4 +207,6 @@ module.exports = {
   updateProducts,
   addProductPhotos,
   deleteProductPhoto,
+  addBills,
+  deleteBills,
 };
