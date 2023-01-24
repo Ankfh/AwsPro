@@ -2,79 +2,41 @@ const User = require("../models/userModel");
 const { signin, signup, createToken } = require("../auth/userAuth");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 ////////////////
 ///.............................................
 const userSignup = async (req, res) => {
   try {
-    let { email, password, userName } = req.body;
-
-    var transport = nodemailer.createTransport({
-      host: "mail.labd.tech",
-      port: 465,
-      auth: {
-        user: "testing@labd.tech",
-        pass: "theJungle@007",
-      },
-    });
+    let { email, password, userName, companyId } = req.body;
 
     const hash = await signup(email, password, userName);
+    const exist = await User.findOne({ email });
+    if (exist) {
+      return res
+        .status(201)
+        .json({ message: "Email already exist", success: false });
+    }
 
-    await User.create({
+    const user = await User.create({
       email,
       password: hash,
       userName,
+      companyId,
     });
+    const token = createToken(user._id);
 
-    const user = await User.findOne({ email });
-    const newToken = createToken(user._id);
-
-    const change = {
-      token: newToken,
-    };
-    await User.findByIdAndUpdate(user._id, change, { new: true });
-
-    const mailOptions = {
-      from: "testing@labd.tech",
-      to: "ashfaqnabi357@gmail.com",
-      subject: "helooggggg",
-      text: `${process.env.BASE_URL}/api/user/verify/${user._id}/${newToken}`,
-    };
-    transport.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-
-    console.log(user, "klkl");
     res
       .status(200)
-      .json({ message: "Registration Successfull", success: true });
+      .json({
+        message: "Registration Successfull",
+        token,
+        user,
+        success: true,
+      });
   } catch (error) {
-    return res.status(404).json({ error: error.message, success: false });
+    return res.status(401).json({ error: error.message, success: false });
     // console.log(error);
-  }
-};
-
-///*****vefifyyyyyyyy */
-const verifyEmail = async (req, res) => {
-  const { id, token } = req.params;
-  try {
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
-    const { _id } = decode;
-    const newId = _id
-    const user = await User.findById(_id);
-    if (!user) {
-      return res.status(202).json({ message: "Invalid link", success: false });
-    }
-
-    res
-      .status(200)
-      .json({ message: "email verified sucessfully", success: true });
-  } catch (error) {
-    return res.status(404).json({ error: error.message, success: false });
   }
 };
 
@@ -82,13 +44,26 @@ const verifyEmail = async (req, res) => {
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await signin(email, password);
+    // const user = await signin(email, password);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(201)
+        .json({ message: "Email not exist", success: false });
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res
+        .status(201)
+        .json({ message: "Password Incorrect", success: false });
+    }
 
     //create token..
     const token = createToken(user._id);
+
     res
       .status(200)
-      .json({ message: "Login Successfull", token, success: true });
+      .json({ message: "Login Successfull", user, token, success: true });
   } catch (error) {
     res.status(400).json({ error: error.message, success: false });
     console.log(error);
@@ -98,5 +73,4 @@ const userLogin = async (req, res) => {
 module.exports = {
   userSignup,
   userLogin,
-  verifyEmail,
 };

@@ -12,6 +12,5 @@ const {
 
 router.post("/register", userSignup);
 router.post("/login", userLogin);
-router.get("/verify/:id/:token", verifyEmail);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const addColleague = async (req, res) => {
   try {
     const colleague = new colleagueModel({
       email,
-      token:newToken
+      token: newToken,
     });
 
     await colleague.save();
@@ -20,7 +20,6 @@ const addColleague = async (req, res) => {
     return res.status(404).json({ error: error.message, success: false });
   }
 };
-
 
 const getAllColleague = async (req, res) => {
   try {
@@ -36,7 +35,6 @@ const getAllColleague = async (req, res) => {
   }
 };
 
-
 const deleteColleague = async (req, res) => {
   try {
     const { id } = req.query;
@@ -46,15 +44,12 @@ const deleteColleague = async (req, res) => {
         .status(201)
         .json({ message: "No Such Colleague found", success: false });
     }
-  
 
     res.status(200).json({ message: "Colleague Deleted", success: true });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
 };
-
-
 
 const updateColleague = async (req, res) => {
   const { id } = req.query;
@@ -65,10 +60,8 @@ const updateColleague = async (req, res) => {
       .json({ message: "No Such Colleague found", success: false });
   }
 
-  
   const change = {
-    email:req.body.email,
-   
+    email: req.body.email,
   };
 
   const newColleague = await colleagueModel.findByIdAndUpdate(id, change, {
@@ -76,12 +69,16 @@ const updateColleague = async (req, res) => {
   });
   return res
     .status(200)
-    .json({ message: "Product Update Successfull", newColleague, success: true });
+    .json({
+      message: "Product Update Successfull",
+      newColleague,
+      success: true,
+    });
 };
 
 module.exports = {
-    addColleague,
-    getAllColleague,
-    deleteColleague,
-    updateColleague
-  }
+  addColleague,
+  getAllColleague,
+  deleteColleague,
+  updateColleague,
+};
