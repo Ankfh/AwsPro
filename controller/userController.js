@@ -7,10 +7,11 @@ const bcrypt = require("bcrypt");
 ////////////////
 ///.............................................
 const userSignup = async (req, res) => {
+  console.log(req.body.companyId,'jj')
   try {
-    let { email, password, userName, companyId } = req.body;
+    let { email, password, userName, companyId, userType } = req.body;
 
-    const hash = await signup(email, password, userName);
+    const hash = await signup(password);
     const exist = await User.findOne({ email });
     if (exist) {
       return res
@@ -23,17 +24,16 @@ const userSignup = async (req, res) => {
       password: hash,
       userName,
       companyId,
+      userType
     });
     const token = createToken(user._id);
 
-    res
-      .status(200)
-      .json({
-        message: "Registration Successfull",
-        token,
-        user,
-        success: true,
-      });
+    res.status(200).json({
+      message: "Registration Successfull",
+      token,
+      user,
+      success: true,
+    });
   } catch (error) {
     return res.status(401).json({ error: error.message, success: false });
     // console.log(error);

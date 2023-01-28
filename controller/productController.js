@@ -7,14 +7,15 @@ const { productBillsDelete } = require("../DeleteFiles/productBillsDelete");
 
 /////adddd productssssss
 const addProduct = async (req, res) => {
-  const { id } = req.query;
   const {
     productName,
     serialNumber,
     productDescription,
     productPhoto,
     goodsBill,
+    companyId,
   } = req.body;
+  console.log(productDescription);
   try {
     const products = new productModel({
       productName,
@@ -22,6 +23,7 @@ const addProduct = async (req, res) => {
       productDescription,
       productPhoto,
       goodsBill,
+      companyId,
     });
 
     await products.save();
@@ -43,6 +45,23 @@ const getAllProduct = async (req, res) => {
         .json({ message: "No Product Found", success: false });
     }
     res.status(200).json({ allProduct, success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
+////get single product by id //////
+const getSingleProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const products = await productModel.findById({ _id: id });
+    if (!products) {
+      return res
+        .status(201)
+        .json({ message: "No Such Product found", success: false });
+    }
+
+    res.status(200).json({ products, success: true });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -129,12 +148,11 @@ const updateProducts = async (req, res) => {
 /////Add product photo ........................
 const addProductPhotos = async (req, res) => {
   try {
-    const pdf = req.files.photo;
-
-    const imagePath = [];
+    const { type } = req.body;
+    const images = req.files.photo;
+    var uploadPath;
     if (req.files.photo) {
-      const uploadPath = await uploadProductImage(images);
-      imagePath.push(uploadPath);
+      uploadPath = await uploadProductImage(images);
     } else {
       return res
         .status(201)
@@ -143,7 +161,12 @@ const addProductPhotos = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "image added Successfull", imagePath, success: true });
+      .json({
+        message: "image added Successfull",
+        uploadPath,
+        type,
+        success: true,
+      });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -152,6 +175,7 @@ const addProductPhotos = async (req, res) => {
 ////Delete Product Photo ...............
 const deleteProductPhoto = async (req, res) => {
   const { name } = req.body;
+  console.log(name);
   try {
     await productPhotoDelete(name);
 
@@ -167,11 +191,9 @@ const deleteProductPhoto = async (req, res) => {
 const addBills = async (req, res) => {
   try {
     const pdf = req.files.pdf;
-
-    const pdfPath = [];
+    var uploadPath;
     if (req.files.pdf) {
-      const uploadPath = await productBilsUpload(pdf);
-      pdfPath.push(uploadPath);
+      uploadPath = await productBilsUpload(pdf);
     } else {
       return res
         .status(201)
@@ -180,7 +202,7 @@ const addBills = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "Bills added Successfull", pdfPath, success: true });
+      .json({ message: "Bills added Successfull", uploadPath, success: true });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -209,4 +231,5 @@ module.exports = {
   deleteProductPhoto,
   addBills,
   deleteBills,
+  getSingleProduct,
 };

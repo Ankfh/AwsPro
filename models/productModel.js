@@ -22,6 +22,23 @@ const productShema = new schema(
     goodsBill: {
       type: String,
     },
+    status: {
+      type: String,
+      default: "review",
+    },
+    productUrl: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    urlStatus: {
+      type: String,
+      default: "review",
+    },
+    companyId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

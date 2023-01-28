@@ -15,11 +15,16 @@ const userSchema = new schema(
     },
     companyId: {
       type: String,
+      required: true,
     },
     password: {
       type: String,
       required: true,
     },
+    userType:{
+      type: String,
+      default: 'user'
+    }
   },
   {
     timestamps: true,
