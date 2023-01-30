@@ -7,33 +7,23 @@ const { productBillsDelete } = require("../DeleteFiles/productBillsDelete");
 
 /////adddd productssssss
 const addProduct = async (req, res) => {
-  const { id } = req.query;
   const {
     productName,
     serialNumber,
     productDescription,
     productPhoto,
     goodsBill,
+    companyId,
   } = req.body;
+  console.log(productDescription);
   try {
-    // if (Array.isArray(pdfs)) {
-    //   if (req.files.pdf) {
-    //     for (let i = 0; i < pdfs.length; i++) {
-    //       const uploadPath = await productBilsUpload(pdfs[i]);
-    //       pdfPath.push(uploadPath);
-    //     }
-    //   }
-    // } else {
-    //   const uploadPath = await productBilsUpload(pdfs);
-    //   pdfPath.push(uploadPath);
-    // }
-    // const pdfString = JSON.stringify(pdfPath);
     const products = new productModel({
       productName,
       serialNumber,
       productDescription,
       productPhoto,
       goodsBill,
+      companyId,
     });
 
     await products.save();
@@ -60,6 +50,23 @@ const getAllProduct = async (req, res) => {
   }
 };
 
+////get single product by id //////
+const getSingleProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const products = await productModel.findById({ _id: id });
+    if (!products) {
+      return res
+        .status(201)
+        .json({ message: "No Such Product found", success: false });
+    }
+
+    res.status(200).json({ products, success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
 //////detete productssss   ///////////////////
 const deleteProductById = async (req, res) => {
   try {
@@ -70,11 +77,11 @@ const deleteProductById = async (req, res) => {
         .status(201)
         .json({ message: "No Such Product found", success: false });
     }
-    const parseProductPhoto = JSON.parse(products.productPhoto);
-    const parseProductBill = JSON.parse(products.goodsBill);
+    // const parseProductPhoto = JSON.parse(products.productPhoto);
+    // const parseProductBill = JSON.parse(products.goodsBill);
 
-    await productPhotoDelete(parseProductPhoto);
-    await productBillsDelete(parseProductBill);
+    // await productPhotoDelete(parseProductPhoto);
+    // await productBillsDelete(parseProductBill);
 
     res.status(200).json({ message: "Product Deleted", success: true });
   } catch (error) {
@@ -96,10 +103,10 @@ const updateProducts = async (req, res) => {
   // const parseProductBill = JSON.parse(product.goodsBill);
 
   // if (req.files.photo) {
-  //   const images = req.files.photo;
+  //   const pdf = req.files.photo;
   //   await productPhotoDelete(parseProductPhoto);
-  //   for (let i = 0; i < images.length; i++) {
-  //     const uploadPath = await uploadProductImage(images[i]);
+  //   for (let i = 0; i < pdf.length; i++) {
+  //     const uploadPath = await uploadProductImage(pdf[i]);
   //     imagePath.push(uploadPath);
   //   }
   // }
@@ -121,12 +128,12 @@ const updateProducts = async (req, res) => {
   //   }
   // }
 
-  // const imagesString = JSON.stringify(imagePath);
+  // const pdfString = JSON.stringify(imagePath);
   const change = {
     productName: req.body.productName,
     productDescription: req.body.productDescription,
     serialNumber: req.body.serialNumber,
-    // productPhoto: imagesString,
+    // productPhoto: pdfString,
     // goodsBill: pdfPath,
   };
 
@@ -141,12 +148,11 @@ const updateProducts = async (req, res) => {
 /////Add product photo ........................
 const addProductPhotos = async (req, res) => {
   try {
+    const { type } = req.body;
     const images = req.files.photo;
-
-    const imagePath = [];
+    var uploadPath;
     if (req.files.photo) {
-      const uploadPath = await uploadProductImage(images);
-      imagePath.push(uploadPath);
+      uploadPath = await uploadProductImage(images);
     } else {
       return res
         .status(201)
@@ -155,7 +161,12 @@ const addProductPhotos = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "image added Successfull", imagePath, success: true });
+      .json({
+        message: "image added Successfull",
+        uploadPath,
+        type,
+        success: true,
+      });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -164,12 +175,49 @@ const addProductPhotos = async (req, res) => {
 ////Delete Product Photo ...............
 const deleteProductPhoto = async (req, res) => {
   const { name } = req.body;
+  console.log(name);
   try {
     await productPhotoDelete(name);
 
     return res
       .status(200)
       .json({ message: "image deleted Successfull", success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
+//"""""""""""""""""""""""'add billsssss;;;;;;;;;;;;"
+const addBills = async (req, res) => {
+  try {
+    const pdf = req.files.pdf;
+    var uploadPath;
+    if (req.files.pdf) {
+      uploadPath = await productBilsUpload(pdf);
+    } else {
+      return res
+        .status(201)
+        .json({ message: "No Bills Found", success: false });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Bills added Successfull", uploadPath, success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
+//""""""""""Delete Bills"""""""""""""
+const deleteBills = async (req, res) => {
+  const { name } = req.body;
+  console.log(name);
+  try {
+    await productBillsDelete(name);
+
+    return res
+      .status(200)
+      .json({ message: "Bill deleted Successfull", success: true });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -181,4 +229,7 @@ module.exports = {
   updateProducts,
   addProductPhotos,
   deleteProductPhoto,
+  addBills,
+  deleteBills,
+  getSingleProduct,
 };

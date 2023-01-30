@@ -17,11 +17,27 @@ const productShema = new schema(
       // required: true,
     },
     productPhoto: {
-      type: Array,
-      default: []
+      type: String,
     },
     goodsBill: {
       type: String,
+    },
+    status: {
+      type: String,
+      default: "review",
+    },
+    productUrl: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    urlStatus: {
+      type: String,
+      default: "review",
+    },
+    companyId: {
+      type: String,
+      required: true,
     },
   },
   {

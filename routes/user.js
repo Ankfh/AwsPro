@@ -7,11 +7,10 @@ const checkAuth = require("../middleware/checkAuth");
 const {
   userLogin,
   userSignup,
- 
+  verifyEmail,
 } = require("../controller/userController");
 
 router.post("/register", userSignup);
 router.post("/login", userLogin);
-
 
 module.exports = router;

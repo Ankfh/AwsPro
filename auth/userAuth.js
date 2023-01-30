@@ -10,12 +10,8 @@ const createToken = (_id) => {
 };
 
 //fuction for password encrypt and email check
-const signup = async (email, password, userName) => {
-  const emailExists = await User.findOne({ email });
-
-  if (emailExists) {
-    throw Error("Email already in use");
-  }
+const signup = async (password) => {
+  
 
   const salt = bcrypt.genSaltSync(10);
   const hash = await bcrypt.hash(password, salt);
@@ -27,9 +23,9 @@ const signup = async (email, password, userName) => {
 const signin = async (email, password) => {
   const user = await User.findOne({ email });
 
-  if (!user) {
-    throw Error("Incorrect Email");
-  }
+  // if (!user) {
+  //   throw Error("Incorrect Email");
+  // }
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
