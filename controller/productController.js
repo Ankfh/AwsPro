@@ -159,14 +159,12 @@ const addProductPhotos = async (req, res) => {
         .json({ message: "No Photo Found", success: false });
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "image added Successfull",
-        uploadPath,
-        type,
-        success: true,
-      });
+    return res.status(200).json({
+      message: "image added Successfull",
+      uploadPath,
+      type,
+      success: true,
+    });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -175,8 +173,13 @@ const addProductPhotos = async (req, res) => {
 ////Delete Product Photo ...............
 const deleteProductPhoto = async (req, res) => {
   const { name } = req.body;
-  console.log(name);
   try {
+    if(!name){
+      
+    return res
+    .status(201)
+    .json({ message: "Name is require", success: false });
+    }
     await productPhotoDelete(name);
 
     return res

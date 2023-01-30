@@ -22,6 +22,10 @@ const ProductTransferShema = new schema(
     productPhoto: {
       type: String,
     },
+    companyId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
