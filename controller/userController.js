@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 ////////////////
 ///.............................................
 const userSignup = async (req, res) => {
-  console.log(req.body.companyId,'jj')
+  console.log(req.body.companyId, "jj");
   try {
     let { email, password, userName, companyId, userType } = req.body;
 
@@ -24,7 +24,7 @@ const userSignup = async (req, res) => {
       password: hash,
       userName,
       companyId,
-      userType
+      userType,
     });
     const token = createToken(user._id);
 
@@ -70,7 +70,55 @@ const userLogin = async (req, res) => {
   }
 };
 
+///...........get userr
+const getUser = async (req, res) => {
+  const { id } = req.params;
+  // const {id} = req.query
+  console.log(id);
+  try {
+    const user = await User.findById({ _id: id });
+    if (!user) {
+      return res
+        .status(201)
+        .json({ message: "No Such user found", success: false });
+    }
+
+    res.status(200).json({ user, success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
+///update user///////
+const updateUser = async (req, res) => {
+  // const { id } = req.query;
+  const { email } = req.body;
+  console.log(email, "emaillll");
+  const { id } = req.params;
+  const user = await User.findById({ _id: id });
+  if (!user) {
+    return res
+      .status(201)
+      .json({ message: "No Such user found", success: false });
+  }
+
+  const update = {
+    userName: req.body.userName,
+    email: req.body.email,
+    password: req.body.password,
+  };
+
+  const newuser = await User.findByIdAndUpdate(id, update, {
+    new: true,
+  });
+  return res
+    .status(200)
+    .json({ message: "user Update Successfull", newuser, success: true });
+};
+
 module.exports = {
   userSignup,
   userLogin,
+  getUser,
+  updateUser,
 };

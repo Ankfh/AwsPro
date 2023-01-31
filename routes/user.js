@@ -8,9 +8,14 @@ const {
   userLogin,
   userSignup,
   verifyEmail,
+  getUser,
+  updateUser
+
 } = require("../controller/userController");
 
 router.post("/register", userSignup);
 router.post("/login", userLogin);
+router.get("/getuser/:id", getUser);
+router.patch("/updateuser/:id", updateUser);
 
 module.exports = router;
