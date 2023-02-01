@@ -10,9 +10,18 @@ const colleagueSchema = new schema(
     },
     token: {
       type: String,
-      
     },
-
+    companyId: {
+      type: String,
+    },
+    status: {
+      type: String,
+      default: "pending",
+    },
+    type: {
+      type: String,
+      default: 'user'
+    }
   },
   {
     timestamps: true,

@@ -6,6 +6,8 @@ const {
   uploadTransferProductImage,
 } = require("../uploadFile/productTransferPhotoUploads");
 
+const nodemailer = require("nodemailer");
+
 const transferProduct = async (req, res) => {
   const { id } = req.query;
   const {
@@ -15,8 +17,27 @@ const transferProduct = async (req, res) => {
     customerProductDescription,
     productPhoto,
     companyId,
+    url
   } = req.body;
+
   try {
+    let transporter = nodemailer.createTransport({
+      host: "mail.labd.tech",
+      port: 465,
+      auth: {
+        user: "testing@labd.tech",
+        pass: "theJungle@007",
+      },
+    });
+    var mailOption = {
+      from: "testing@labd.tech",
+      to: "ashfaqnabi357@gmail.com",
+      subject: "product URL",
+      text: `${url}`,
+    };
+
+  
+
     const TransferProducts = new ProdutTransferModel({
       customerCompanyName,
       customerEmail,
@@ -28,6 +49,14 @@ const transferProduct = async (req, res) => {
 
     await TransferProducts.save();
 
+    await transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        console.log("error", error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+   
     res
       .status(200)
       .json({ message: "Product Transfer", TransferProducts, success: true });
