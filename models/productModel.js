@@ -24,7 +24,7 @@ const productShema = new schema(
     },
     status: {
       type: String,
-      default: "done",
+      default: "download",
     },
     productUrl: {
       type: String,

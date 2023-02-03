@@ -3,6 +3,7 @@ const { signin, signup, createToken } = require("../auth/userAuth");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const colleagueModel = require("../models/colleagueModel");
 
 ////////////////
 ///.............................................
@@ -116,9 +117,53 @@ const updateUser = async (req, res) => {
     .json({ message: "user Update Successfull", newuser, success: true });
 };
 
+const userLinkSignup = async (req, res) => {
+  const { id } = req.params;
+  try {
+    let { email, password, userName, companyId, userType } = req.body;
+
+    const hash = await signup(password);
+    const exist = await User.findOne({ email });
+    if (exist) {
+      return res
+        .status(201)
+        .json({ message: "Email already exist", success: false });
+    }
+    const change = {
+      status: "active",
+      token: null
+    };
+    const user = await User.create({
+      email,
+      password: hash,
+      userName,
+      companyId,
+      userType,
+    });
+    const token = createToken(user._id);
+
+    const updateColleague = await colleagueModel.findByIdAndUpdate(
+      { _id: id },
+      change,
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "user signup Successfull",
+      token,
+      user,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(401).json({ error: error.message, success: false });
+    // console.log(error);
+  }
+};
+
 module.exports = {
   userSignup,
   userLogin,
   getUser,
   updateUser,
+  userLinkSignup,
 };

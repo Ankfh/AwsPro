@@ -39,7 +39,7 @@ const addColleague = async (req, res) => {
         from: "testing@labd.tech",
         to: `${emials[i]}`,
         subject: "product URL",
-        text: `${baseUrl}/usersignup/${newToken}`,
+        text: `${baseUrl}/varification/${newToken}`,
       };
 
       transporter.sendMail(mailOption, (error, info) => {
@@ -59,7 +59,7 @@ const addColleague = async (req, res) => {
 
   res
     .status(200)
-    .json({ message: "colleague Added", colleagues, success: true });
+    .json({ message: "colleague Added", colleagues,companyId, success: true });
 };
 
 const getAllColleague = async (req, res) => {
@@ -118,37 +118,39 @@ const updateColleague = async (req, res) => {
 //'''''''''colleague invitation..............
 const verifyInvitation = async (req, res) => {
   const { token } = req.params;
-  const newToken = await jwt.verify(token, process.env.JWT_SECRET);
-  if (!newToken) {
-    return res.status(201).json({ message: "invalid Link", success: false });
-  }
+  try {
+    const data = await colleagueModel.findOne({ token, status: 'pending' });
+    const newToken = await jwt.verify(
+      data.token,
+      process.env.JWT_SECRET,
+      (err, id) => {
+        if (err) {
+          console.log("eroor");
+          return res
+            .status(201)
+            .json({ message: "Invalid link", success: false });
+        }
+        return id;
+      }
+    );
 
-  const update = {
-    status: "active",
-  };
-
-  const userInfo = await colleagueModel.findOne({ email: newToken._id });
-  console.log(userInfo)
-  if (userInfo.status === "active") {
-    return res
-      .status(201)
-      .json({ message: "user already activated", success: false });
-  }
-
-  const data = await colleagueModel.findOneAndUpdate(
-    { email: newToken._id },
-    update,
-    {
-      new: true,
+    
+    if (!newToken || newToken === null) {
+      return res.status(201).json({ message: "invalid link,", success: false });
     }
-  );
-  if (!data) {
-    return res
-      .status(201)
-      .json({ message: "no such colleague found", success: false });
-  }
 
-  res.status(200).json({ message: "user activated", success: false });
+    const userInfo = await colleagueModel.findOne({ email: newToken._id });
+    if (userInfo?.status === "active") {
+      return res
+        .status(201)
+        .json({ message: "user already activated", success: false });
+    }
+   
+    res.status(200).json({ message: "user not activated",userInfo, success: true });
+  } catch (error) {
+    // console.log(error);
+    res.status(400).json({ message: "something went wrong", success: false });
+  }
 };
 
 module.exports = {

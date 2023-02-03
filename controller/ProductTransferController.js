@@ -15,9 +15,10 @@ const transferProduct = async (req, res) => {
     customerEmail,
     customerProductName,
     customerProductDescription,
+    serialNumber,
     productPhoto,
     companyId,
-    url
+    url,
   } = req.body;
 
   try {
@@ -36,13 +37,12 @@ const transferProduct = async (req, res) => {
       text: `${url}`,
     };
 
-  
-
     const TransferProducts = new ProdutTransferModel({
       customerCompanyName,
       customerEmail,
       customerProductName,
       customerProductDescription,
+      serialNumber,
       companyId,
       productPhoto,
     });
@@ -56,7 +56,7 @@ const transferProduct = async (req, res) => {
         console.log("Email sent: " + info.response);
       }
     });
-   
+
     res
       .status(200)
       .json({ message: "Product Transfer", TransferProducts, success: true });
@@ -116,6 +116,7 @@ const updateTransferProducts = async (req, res) => {
     customerCompanyName: req.body.customerCompanyName,
     customerEmail: req.body.customerEmail,
     customerProductName: req.body.customerProductName,
+    serialNumber: req.body.serialNumber,
     customerProductDescription: req.body.customerProductDescription,
     productPhoto: req.body.productPhoto,
   };
@@ -178,6 +179,23 @@ const deleteTransferProductPhoto = async (req, res) => {
   }
 };
 
+///get single transferr............
+const getSingleTransfer = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const transfer = await ProdutTransferModel.findById({ _id: id });
+    if (!transfer) {
+      return res
+        .status(201)
+        .json({ message: "No Such transfer Product found", success: false });
+    }
+
+    res.status(200).json({ transfer, success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
 module.exports = {
   transferProduct,
   getAllTransferProduct,
@@ -185,4 +203,5 @@ module.exports = {
   deleteTransferProductPhoto,
   deleteTransferProductById,
   updateTransferProducts,
+  getSingleTransfer,
 };

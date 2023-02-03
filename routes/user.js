@@ -9,7 +9,8 @@ const {
   userSignup,
   verifyEmail,
   getUser,
-  updateUser
+  updateUser,
+  userLinkSignup
 
 } = require("../controller/userController");
 
@@ -17,5 +18,6 @@ router.post("/register", userSignup);
 router.post("/login", userLogin);
 router.get("/getuser/:id", getUser);
 router.patch("/updateuser/:id", updateUser);
+router.post("/userlinksignup/:id", userLinkSignup);
 
 module.exports = router;
