@@ -19,8 +19,16 @@ const ProductTransferShema = new schema(
     customerProductDescription: {
       type: String,
     },
+    serialNumber: {
+      type: String,
+    },
+    
     productPhoto: {
       type: String,
+    },
+    companyId: {
+      type: String,
+      required: true,
     },
   },
   {
