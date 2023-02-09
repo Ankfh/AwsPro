@@ -7,6 +7,7 @@ const {
 } = require("../uploadFile/productTransferPhotoUploads");
 
 const nodemailer = require("nodemailer");
+const userModel = require("../models/userModel");
 
 const transferProduct = async (req, res) => {
   const { id } = req.query;
@@ -104,7 +105,8 @@ const getAllTransferProduct = async (req, res) => {
 
 //************update transfer product*** */
 const updateTransferProducts = async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
+  console.log(id)
   const product = await ProdutTransferModel.findById({ _id: id });
   if (!product) {
     return res
@@ -138,7 +140,7 @@ const updateTransferProducts = async (req, res) => {
 //*******************Add photo************** */
 const addTranferProductPhotos = async (req, res) => {
   try {
-    const { type } = req.body;
+    const { type, id } = req.body;
 
     const images = req.files.photo;
     var uploadPath;
@@ -151,6 +153,23 @@ const addTranferProductPhotos = async (req, res) => {
         .json({ message: "No Photo Found", success: false });
     }
 
+    // if (id !== "false") {
+    //   const user = await ProdutTransferModel.findById({ _id: id });
+    //   let array = JSON.parse(user.productPhoto);
+    //    let newArray=   array.push({path:uploadPath })
+
+    //   let photos = JSON.stringify(newArray);
+    //   console.log(newArray)
+    //   const change = {
+    //     productPhoto: photos,
+    //   };
+    //   const dat = await ProdutTransferModel.findByIdAndUpdate(
+    //     { _id: id },
+    //     change,
+    //     { new: true }
+    //   );
+    // }
+
     return res.status(200).json({
       message: "image added Successfull",
       uploadPath,
@@ -162,18 +181,92 @@ const addTranferProductPhotos = async (req, res) => {
   }
 };
 
+///// update transfer PHotoo ?//////////////////
+
+const updateTransferPhoto = async (req, res) => {
+  try {
+    const { type, id, status } = req.body;
+
+    const images = req.files.photo;
+    var uploadPath;
+
+    if (req.files.photo) {
+      uploadPath = await uploadTransferProductImage(images);
+    } else {
+      return res
+        .status(201)
+        .json({ message: "No Photo Found", success: false });
+    }
+
+    const transferData = await ProdutTransferModel.findById({ _id: id });
+    if (!transferData) {
+      return res
+        .status(201)
+        .json({ message: "No Photo Found", success: false });
+    }
+    // let array = JSON.parse(user.productPhoto);
+    // let newArray = array.push({ path: uploadPath });
+
+    let newData = JSON.parse(transferData.productPhoto);
+        
+
+    newData.push({ path: uploadPath, status, type });
+    const stringData = JSON.stringify(newData);
+    // let array = JSON.parse(user.productPhoto);
+    // let newArray = newData.push(newData);
+
+    // console.log(newArray);
+    const change = {
+      productPhoto: stringData,
+    };
+    const dat = await ProdutTransferModel.findByIdAndUpdate(
+      { _id: id },
+      change,
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "image update Successfull",
+      dat,
+      uploadPath,
+      type,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
+  }
+};
+
 //^^^^^^^^^^^^^^photo delete^^^^^^^^^^^^^^^^^^^^^^
 const deleteTransferProductPhoto = async (req, res) => {
-  const { name } = req.body;
+  const { name, id } = req.body;
   if (!name) {
     return res.status(201).json({ message: "Name is require", success: false });
   }
   try {
     await productTransferPhotoDelete(name);
 
+    if (id != "false") {
+      const user = await ProdutTransferModel.findById({ _id: id });
+      let array = JSON.parse(user.productPhoto);
+      let newArray = array.filter((item, index) => {
+        return name !== item.path;
+      });
+      console.log(newArray);
+      let photos = JSON.stringify(newArray);
+      const change = {
+        productPhoto: photos,
+      };
+
+      const newUser = await ProdutTransferModel.findByIdAndUpdate(
+        { _id: id },
+        change,
+        { new: true }
+      );
+    }
     return res
       .status(200)
-      .json({ message: "image deleted Successfull", success: true });
+      .json({ message: "imagee deleted Successfull", success: true });
   } catch (error) {
     return res.status(404).json({ error: error.message, success: false });
   }
@@ -204,4 +297,5 @@ module.exports = {
   deleteTransferProductById,
   updateTransferProducts,
   getSingleTransfer,
+  updateTransferPhoto,
 };
