@@ -24,12 +24,11 @@ const productShema = new schema(
     },
     status: {
       type: String,
-      default: "download",
+      default: "review",
     },
     productUrl: {
       type: String,
-      // required: false,
-      default: "uuu",
+      required: false,
     },
     urlStatus: {
       type: String,

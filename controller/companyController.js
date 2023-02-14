@@ -13,7 +13,8 @@ const companySignup = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    return res.status(404).json({ error: error.message, success: false });
+    console.log(error)
+    return res.status(400).json({ error: error.message, success: false });
     console.log(error);
   }
 };

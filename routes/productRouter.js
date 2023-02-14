@@ -19,7 +19,7 @@ const {
 ///routes//////
 
 router.post("/addproduct", checkAuth, addProduct);
-router.get("/getallproduct", checkAuth, getAllProduct);
+router.get("/getallproduct/:companyId", checkAuth, getAllProduct);
 router.delete("/deleteproduct", checkAuth, deleteProductById);
 router.put("/updateproduct", checkAuth, updateProducts);
 router.post("/productphotoadd", checkAuth, addProductPhotos);

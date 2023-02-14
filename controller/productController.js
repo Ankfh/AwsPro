@@ -38,7 +38,8 @@ const addProduct = async (req, res) => {
 ////get All product ///////////////
 const getAllProduct = async (req, res) => {
   try {
-    const allProduct = await productModel.find({}).sort({ createdAt: -1 });
+    const companyId = req.params.companyId;
+    const allProduct = await productModel.find({companyId}).sort({ createdAt: -1 });
     if (!allProduct) {
       return res
         .status(201)
@@ -46,7 +47,7 @@ const getAllProduct = async (req, res) => {
     }
     res.status(200).json({ allProduct, success: true });
   } catch (error) {
-    return res.status(404).json({ error: error.message, success: false });
+    return res.status(400).json({ error: error.message, success: false });
   }
 };
 

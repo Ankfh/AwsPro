@@ -64,7 +64,8 @@ const addColleague = async (req, res) => {
 
 const getAllColleague = async (req, res) => {
   try {
-    const allColleague = await colleagueModel.find({}).sort({ createdAt: -1 });
+    const companyId = req.params.companyId;
+    const allColleague = await colleagueModel.find({companyId}).sort({ createdAt: -1 });
     if (!allColleague) {
       return res
         .status(201)

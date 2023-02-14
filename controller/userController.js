@@ -97,17 +97,30 @@ const updateUser = async (req, res) => {
   console.log(email, "emaillll");
   const { id } = req.params;
   const user = await User.findById({ _id: id });
+  
   if (!user) {
     return res
       .status(201)
       .json({ message: "No Such user found", success: false });
   }
-
-  const update = {
-    userName: req.body.userName,
-    email: req.body.email,
-    password: req.body.password,
-  };
+var update = null;
+  if(req.body.userName){
+     update = {
+      userName: req.body.userName,
+    };
+  }
+  else if(req.body.email){
+     update = {
+      email: req.body.email,
+    };
+  }
+  else if(req.body.password){
+    const hash = await signup(req.body.password);
+    update = {
+      password: hash,
+    };
+  }
+   
 
   const newuser = await User.findByIdAndUpdate(id, update, {
     new: true,

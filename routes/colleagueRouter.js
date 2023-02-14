@@ -11,7 +11,7 @@ const {
 } = require("../controller/colleagueController");
 
 router.post("/addcolleague", checkAuth, addColleague);
-router.get("/getallcolleague", checkAuth, getAllColleague);
+router.get("/getallcolleague/:companyId", checkAuth, getAllColleague);
 router.delete("/deletecolleague", checkAuth, deleteColleague);
 router.patch("/updatecolleague", checkAuth, updateColleague);
 router.post("/verifyinvitation/:token", verifyInvitation);
