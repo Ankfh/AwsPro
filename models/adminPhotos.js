@@ -11,6 +11,10 @@ const photosSchema = new schema(
     companyId: {
       type: String,
     },
+    productName:{
+      type: String,
+
+    },
     photos: {
       type: String,
     },

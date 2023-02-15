@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const colleagueModel = require("../models/colleagueModel");
+const { baseUrl } = require("../baseUrl/baseUrl");
 
 ////////////////
 ///.............................................
@@ -97,30 +98,27 @@ const updateUser = async (req, res) => {
   console.log(email, "emaillll");
   const { id } = req.params;
   const user = await User.findById({ _id: id });
-  
+
   if (!user) {
     return res
       .status(201)
       .json({ message: "No Such user found", success: false });
   }
-var update = null;
-  if(req.body.userName){
-     update = {
+  var update = null;
+  if (req.body.userName) {
+    update = {
       userName: req.body.userName,
     };
-  }
-  else if(req.body.email){
-     update = {
+  } else if (req.body.email) {
+    update = {
       email: req.body.email,
     };
-  }
-  else if(req.body.password){
+  } else if (req.body.password) {
     const hash = await signup(req.body.password);
     update = {
       password: hash,
     };
   }
-   
 
   const newuser = await User.findByIdAndUpdate(id, update, {
     new: true,
@@ -144,7 +142,7 @@ const userLinkSignup = async (req, res) => {
     }
     const change = {
       status: "active",
-      token: null
+      token: null,
     };
     const user = await User.create({
       email,
@@ -173,10 +171,82 @@ const userLinkSignup = async (req, res) => {
   }
 };
 
+/// send password reset link ..///////////////
+const passwordResetLink = async (req, res) => {
+  const { email } = req.body;
+  let transporter = nodemailer.createTransport({
+    host: "mail.labd.tech",
+    port: 465,
+    auth: {
+      user: "testing@labd.tech",
+      pass: "theJungle@007",
+    },
+  });
+
+  try {
+    const newToken = await createToken(email);
+    const check = await User.findOne({ email: email });
+    if (!check) {
+      return res
+        .status(200)
+        .json({ message: "no such user found", success: true });
+    }
+
+    var mailOption = {
+      from: "testing@labd.tech",
+      to: `${email}`,
+      subject: "product URL",
+      text: `${baseUrl}/passwordvarification/${newToken}`,
+    };
+
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        console.log("error", error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  res.status(200).json({ message: "link send to your email", success: true });
+};
+
+///.....verify reset password link ...........
+const verifyResetPassword = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const newToken = await jwt.verify(
+      token,
+      process.env.JWT_SECRET,
+      (err, id) => {
+        if (err) {
+          console.log("eroor");
+          return false;
+        }
+        return id;
+      }
+    );
+
+    const userInfo = await User.findOne({ email: newToken._id });
+    if (!userInfo) {
+      return res.status(201).json({ message: "invalid link", success: false });
+    }
+
+    res.status(200).json({ message: "link verified", success: true });
+  } catch (error) {
+    // console.log(error);
+    res.status(400).json({ message: "something went wrong", success: false });
+  }
+};
+
 module.exports = {
   userSignup,
   userLogin,
   getUser,
   updateUser,
   userLinkSignup,
+  passwordResetLink,
+  verifyResetPassword,
 };

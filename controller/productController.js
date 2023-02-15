@@ -92,7 +92,7 @@ const deleteProductById = async (req, res) => {
 
 ////// update products ......................
 const updateProducts = async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
   const product = await productModel.findById({ _id: id });
   if (!product) {
     return res
@@ -134,6 +134,7 @@ const updateProducts = async (req, res) => {
     productName: req.body.productName,
     productDescription: req.body.productDescription,
     serialNumber: req.body.serialNumber,
+    productUrl: req.body.productUrl
     // productPhoto: pdfString,
     // goodsBill: pdfPath,
   };

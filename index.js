@@ -12,6 +12,7 @@ const productRouter = require('./routes/productRouter')
 const productTransferRouter =require('./routes/ProductTransferRouter')
 const colleagueRouter = require('./routes/colleagueRouter')
 const userSignupRouter = require('./routes/userSignupRouter')
+const adminRouter =require('./routes/adminRouter')
 
 const connectDB = require("./db");
 connectDB();
@@ -37,6 +38,7 @@ app.use("/api/product", productRouter);
 app.use("/api/transferproduct", productTransferRouter);
 app.use("/api/colleague", colleagueRouter);
 app.use("/api/usersignup", userSignupRouter);
+app.use("/api/admin", adminRouter);
 
 
 const port = process.env.PORT;

@@ -21,7 +21,7 @@ const {
 router.post("/addproduct", checkAuth, addProduct);
 router.get("/getallproduct/:companyId", checkAuth, getAllProduct);
 router.delete("/deleteproduct", checkAuth, deleteProductById);
-router.put("/updateproduct", checkAuth, updateProducts);
+router.patch("/updateproduct/:id", checkAuth, updateProducts);
 router.post("/productphotoadd", checkAuth, addProductPhotos);
 router.delete("/deleteproductphoto", checkAuth, deleteProductPhoto);
 router.post("/addbills", checkAuth, addBills);

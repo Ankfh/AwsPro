@@ -10,8 +10,9 @@ const {
   verifyEmail,
   getUser,
   updateUser,
-  userLinkSignup
-
+  userLinkSignup,
+  passwordResetLink,
+  verifyResetPassword
 } = require("../controller/userController");
 
 router.post("/register", userSignup);
@@ -19,5 +20,8 @@ router.post("/login", userLogin);
 router.get("/getuser/:id", getUser);
 router.patch("/updateuser/:id", updateUser);
 router.post("/userlinksignup/:id", userLinkSignup);
+router.post("/resetPasswordLink", passwordResetLink);
+router.get("/verifypasswordlink/:token", verifyResetPassword);
+
 
 module.exports = router;
