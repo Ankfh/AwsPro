@@ -234,10 +234,37 @@ const verifyResetPassword = async (req, res) => {
       return res.status(201).json({ message: "invalid link", success: false });
     }
 
-    res.status(200).json({ message: "link verified", success: true });
+    res.status(200).json({ message: "link verified", userInfo, success: true });
   } catch (error) {
     // console.log(error);
     res.status(400).json({ message: "something went wrong", success: false });
+  }
+};
+
+///...........................
+const changePassword = async (req, res) => {
+  const { password } = req.body;
+  const { id } = req.params;
+  try {
+    const userData = await User.findById({ _id: id });
+    if (!userData) {
+      return res
+        .status(202)
+        .json({ message: "user not found", success: false });
+    }
+    const hash = await signup(password);
+    const change = {
+      password: hash,
+    };
+
+    const updateData = await User.findByIdAndUpdate({ _id: id }, change, {
+      new: true,
+    });
+    return res
+      .status(200)
+      .json({ message: "Password Change successfully", success: true });
+  } catch (error) {
+    return res.status(404).json({ error: error.message, success: false });
   }
 };
 
@@ -249,4 +276,5 @@ module.exports = {
   userLinkSignup,
   passwordResetLink,
   verifyResetPassword,
+  changePassword
 };
