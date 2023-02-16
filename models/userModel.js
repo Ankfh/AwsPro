@@ -24,6 +24,10 @@ const userSchema = new schema(
     userType:{
       type: String,
       default: 'user'
+    },
+    token:{
+      type: String,
+      default: null
     }
   },
   {

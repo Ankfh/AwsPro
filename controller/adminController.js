@@ -73,11 +73,9 @@ const adminPhoto = async (req, res) => {
 //...............get single photooooooooadmin
 const getSingleAdminPhoto = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   try {
     const products = await adminPhotos.findOne({ productId: id });
-    console.log(products);
     if (!products) {
       return res
         .status(201)
