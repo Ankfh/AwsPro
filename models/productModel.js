@@ -28,6 +28,7 @@ const productShema = new schema(
     },
     productUrl: {
       type: String,
+      default:null,
       required: false,
     },
     urlStatus: {

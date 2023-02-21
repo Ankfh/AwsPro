@@ -268,6 +268,26 @@ const changePassword = async (req, res) => {
   }
 };
 
+const deleteAccount = async (req,res) =>{
+  const { userId } = req.body;
+  const userData = await User.findById({ _id: userId });
+  if(userData){
+    const result = await User.deleteOne({ _id: userId });
+    if(result.acknowledged){
+      return res
+      .status(200)
+      .json({ message: "User Deleted successfully", success: true });
+    }
+    else{
+      return res.status(404).json({ error: "Something went wrong", success: false });
+    }
+  }
+  else{
+    return res.status(404).json({ error: "Something went wrong", success: false });
+  }
+  
+};
+
 module.exports = {
   userSignup,
   userLogin,
@@ -276,5 +296,6 @@ module.exports = {
   userLinkSignup,
   passwordResetLink,
   verifyResetPassword,
-  changePassword
+  changePassword,
+  deleteAccount
 };
