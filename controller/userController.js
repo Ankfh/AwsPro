@@ -51,13 +51,13 @@ const userLogin = async (req, res) => {
     if (!user) {
       return res
         .status(201)
-        .json({ message: "Email not exist", success: false });
+        .json({ message: "Email not exist", type:"email", success: false });
     }
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res
         .status(201)
-        .json({ message: "Password Incorrect", success: false });
+        .json({ message: "Password Incorrect",type:"password", success: false });
     }
 
     //create token..
@@ -185,11 +185,14 @@ const passwordResetLink = async (req, res) => {
 
   try {
     const newToken = await createToken(email);
+    const change = {
+      token: newToken,
+    };
     const check = await User.findOne({ email: email });
     if (!check) {
       return res
         .status(200)
-        .json({ message: "no such user found", success: true });
+        .json({ message: "no such user found", success: false });
     }
 
     var mailOption = {
@@ -201,24 +204,30 @@ const passwordResetLink = async (req, res) => {
 
     transporter.sendMail(mailOption, (error, info) => {
       if (error) {
-        console.log("error", error);
+        return console.log("error", error);
       } else {
         console.log("Email sent: " + info.response);
       }
     });
+
+    await User.findOneAndUpdate({ email: email }, change, { new: true });
+
+    res.status(200).json({ message: "link send to your email", success: true });
   } catch (error) {
     console.log(error);
   }
-
-  res.status(200).json({ message: "link send to your email", success: true });
 };
 
 ///.....verify reset password link ...........
 const verifyResetPassword = async (req, res) => {
   const { token } = req.params;
   try {
+    const saveToken = await User.findOne({ token: token });
+    if (!saveToken) {
+      return res.status(201).json({ message: "invalid link", success: false });
+    }
     const newToken = await jwt.verify(
-      token,
+      saveToken.token,
       process.env.JWT_SECRET,
       (err, id) => {
         if (err) {
@@ -255,6 +264,7 @@ const changePassword = async (req, res) => {
     const hash = await signup(password);
     const change = {
       password: hash,
+      token: null,
     };
 
     const updateData = await User.findByIdAndUpdate({ _id: id }, change, {
