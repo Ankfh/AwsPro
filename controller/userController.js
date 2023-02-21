@@ -109,13 +109,14 @@ const updateUser = async (req, res) => {
       .json({ message: "No Such user found", success: false });
   }
 
-  
   if (req.body.email) {
     const user = await User.findOne({ email: email });
     if (user) {
-      return res
-        .status(201)
-        .json({ message: "This email is already exist", type: 'email', success: false });
+      return res.status(201).json({
+        message: "This email is already exist",
+        type: "email",
+        success: false,
+      });
     }
   }
   var update = null;
@@ -208,6 +209,7 @@ const passwordResetLink = async (req, res) => {
     if (!check) {
       return res
         .status(200)
+
         .json({ message: "No such user found", type: "email", success: false });
     }
 
