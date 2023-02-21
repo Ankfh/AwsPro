@@ -16,9 +16,11 @@ const userSignup = async (req, res) => {
     const hash = await signup(password);
     const exist = await User.findOne({ email });
     if (exist) {
-      return res
-        .status(201)
-        .json({ message: "Email already exist", success: false });
+      return res.status(201).json({
+        message: "Email already exist",
+        type: "email",
+        success: false,
+      });
     }
 
     const user = await User.create({
@@ -51,13 +53,15 @@ const userLogin = async (req, res) => {
     if (!user) {
       return res
         .status(201)
-        .json({ message: "Email not exist", success: false });
+        .json({ message: "Email not exist", type: "email", success: false });
     }
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res
-        .status(201)
-        .json({ message: "Password Incorrect", success: false });
+      return res.status(201).json({
+        message: "Password Incorrect",
+        type: "password",
+        success: false,
+      });
     }
 
     //create token..
@@ -104,6 +108,16 @@ const updateUser = async (req, res) => {
       .status(201)
       .json({ message: "No Such user found", success: false });
   }
+
+  
+  if (req.body.email) {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      return res
+        .status(201)
+        .json({ message: "This email is already exist", type: 'email', success: false });
+    }
+  }
   var update = null;
   if (req.body.userName) {
     update = {
@@ -136,9 +150,11 @@ const userLinkSignup = async (req, res) => {
     const hash = await signup(password);
     const exist = await User.findOne({ email });
     if (exist) {
-      return res
-        .status(201)
-        .json({ message: "Email already exist", success: false });
+      return res.status(201).json({
+        message: "Email already exist",
+        type: "email",
+        success: false,
+      });
     }
     const change = {
       status: "active",
@@ -192,7 +208,7 @@ const passwordResetLink = async (req, res) => {
     if (!check) {
       return res
         .status(200)
-        .json({ message: "no such user found", success: true });
+        .json({ message: "No such user found", type: "email", success: false });
     }
 
     var mailOption = {
@@ -278,6 +294,27 @@ const changePassword = async (req, res) => {
   }
 };
 
+const deleteAccount = async (req, res) => {
+  const { userId } = req.body;
+  const userData = await User.findById({ _id: userId });
+  if (userData) {
+    const result = await User.deleteOne({ _id: userId });
+    if (result.acknowledged) {
+      return res
+        .status(200)
+        .json({ message: "User Deleted successfully", success: true });
+    } else {
+      return res
+        .status(404)
+        .json({ error: "Something went wrong", success: false });
+    }
+  } else {
+    return res
+      .status(404)
+      .json({ error: "Something went wrong", success: false });
+  }
+};
+
 module.exports = {
   userSignup,
   userLogin,
@@ -287,4 +324,5 @@ module.exports = {
   passwordResetLink,
   verifyResetPassword,
   changePassword,
+  deleteAccount,
 };

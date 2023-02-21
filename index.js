@@ -30,7 +30,7 @@ app.use(
 );
 
 app.use("/public", express.static(path.join(__dirname, "/public")));
-
+// app.use(express.static(path.join(__dirname, 'build')));
 
 app.use("/api/user", userRouter);
 app.use("/api/company", companyRouter);
