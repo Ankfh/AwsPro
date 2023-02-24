@@ -1,4 +1,5 @@
 const colleagueModel = require("../models/colleagueModel");
+const companyModel = require("../models/companyModel");
 const { signin, signup, createToken } = require("../auth/userAuth");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
@@ -146,8 +147,9 @@ const verifyInvitation = async (req, res) => {
         .status(201)
         .json({ message: "user already activated", success: false });
     }
-   
-    res.status(200).json({ message: "user not activated",userInfo, success: true });
+    const companyName = await (await companyModel.findOne({ _id: userInfo.companyId })).companyName;
+    // const comData = {...userInfo, companyName};
+    res.status(200).json({ message: companyName,userInfo, success: true });
   } catch (error) {
     // console.log(error);
     res.status(400).json({ message: "something went wrong", success: false });

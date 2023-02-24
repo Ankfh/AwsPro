@@ -10,17 +10,16 @@ const addProduct = async (req, res) => {
   const {
     productName,
     serialNumber,
-    productDescription,
+    productDiscription,
     productPhoto,
     goodsBill,
     companyId,
   } = req.body;
-  console.log(productDescription);
   try {
     const products = new productModel({
       productName,
       serialNumber,
-      productDescription,
+      productDescription:productDiscription,
       productPhoto,
       goodsBill,
       companyId,
